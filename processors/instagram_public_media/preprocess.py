@@ -174,20 +174,31 @@ class InstagramPreprocessor:
     def parse_timestamp(self, timestamp_str: str) -> Optional[str]:
         """
         Convert timestamp string to ISO format
-        Input format: "Oct 02, 2022 5:58 pm"
+        Input formats:
+          - New (2025+): "Oct 02, 2022 5:58 pm"
+          - Legacy (2022): "Oct 02, 2022, 5:58 PM" (extra comma after year)
         Output format: "2022-10-02 17:58:00"
         """
-        try:
-            # Parse the timestamp
-            dt = datetime.strptime(timestamp_str, "%b %d, %Y %I:%M %p")
-            return dt.strftime("%Y-%m-%d %H:%M:%S")
-        except (ValueError, AttributeError) as e:
-            self.log_message(
-                "TIMESTAMP_PARSE_ERROR",
-                f"Failed to parse timestamp: {timestamp_str}",
-                str(e),
-            )
-            return None
+        # Try both timestamp formats (new format first, then legacy with comma)
+        formats = [
+            "%b %d, %Y %I:%M %p",   # New format: "Oct 02, 2022 5:58 pm"
+            "%b %d, %Y, %I:%M %p",  # Legacy format: "Oct 02, 2022, 5:58 PM"
+        ]
+        
+        for fmt in formats:
+            try:
+                dt = datetime.strptime(timestamp_str, fmt)
+                return dt.strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                continue
+        
+        # If all formats fail, log the error
+        self.log_message(
+            "TIMESTAMP_PARSE_ERROR",
+            f"Failed to parse timestamp: {timestamp_str}",
+            "No matching format found",
+        )
+        return None
 
     def extract_gps(self, post_element) -> Tuple[Optional[float], Optional[float]]:
         """
@@ -319,7 +330,10 @@ class InstagramPreprocessor:
                 post_data = {"media_type": media_type}
 
                 # Extract caption (optional)
+                # New format uses <h2>, legacy format uses <div> with same class
                 caption_elem = container.find("h2", class_="_3-95 _2pim _a6-h _a6-i")
+                if not caption_elem:
+                    caption_elem = container.find("div", class_="_3-95 _2pim _a6-h _a6-i")
                 post_data["caption"] = (
                     caption_elem.get_text(strip=True) if caption_elem else ""
                 )
