@@ -38,6 +38,7 @@ class InstagramPreprocessor:
         "posts_1": "posts",
         "archived_posts": "archived_posts",
         "reels": "reels",
+        "igtv_videos": "reels",  # Legacy format (pre-2023) uses igtv_videos.html
         "stories": "stories",
         "profile_photos": "profile",
         "other_content": "other",
@@ -52,7 +53,21 @@ class InstagramPreprocessor:
     ):
         self.export_path = Path(export_path)
         self.media_source_dir = self.export_path / "media"
-        self.html_dir = self.export_path / "your_instagram_activity" / "media"
+
+        # Detect export format: new (2025+) vs legacy (2022)
+        new_format_html_dir = self.export_path / "your_instagram_activity" / "media"
+        legacy_format_html_dir = self.export_path / "content"
+
+        if new_format_html_dir.exists():
+            self.html_dir = new_format_html_dir
+            self.is_legacy_format = False
+        elif legacy_format_html_dir.exists():
+            self.html_dir = legacy_format_html_dir
+            self.is_legacy_format = True
+        else:
+            # Will fail validation with clear error
+            self.html_dir = new_format_html_dir
+            self.is_legacy_format = False
 
         # Output directories
         output_base = Path(output_dir) if output_dir else self.export_path
@@ -141,7 +156,11 @@ class InstagramPreprocessor:
             return False
 
         if not self.html_dir.exists():
-            print(f"ERROR: HTML metadata directory not found: {self.html_dir}")
+            new_path = self.export_path / "your_instagram_activity" / "media"
+            legacy_path = self.export_path / "content"
+            print(f"ERROR: HTML metadata directory not found.")
+            print(f"  Checked: {new_path}")
+            print(f"  Checked: {legacy_path}")
             return False
 
         # Check if at least one HTML file exists

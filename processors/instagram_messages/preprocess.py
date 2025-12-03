@@ -39,9 +39,21 @@ class InstagramMessagesPreprocessor:
         final_output_dir: Optional[Path] = None,
     ):
         self.export_path = Path(export_path)
-        self.messages_dir = (
-            self.export_path / "your_instagram_activity" / "messages" / "inbox"
-        )
+
+        # Detect export format: new (2025+) vs legacy (2022)
+        new_format_inbox = self.export_path / "your_instagram_activity" / "messages" / "inbox"
+        legacy_format_inbox = self.export_path / "messages" / "inbox"
+
+        if new_format_inbox.exists():
+            self.messages_dir = new_format_inbox
+            self.is_legacy_format = False
+        elif legacy_format_inbox.exists():
+            self.messages_dir = legacy_format_inbox
+            self.is_legacy_format = True
+        else:
+            # Will fail validation with clear error
+            self.messages_dir = new_format_inbox
+            self.is_legacy_format = False
 
         # Output directories
         output_base = Path(output_dir) if output_dir else self.export_path
