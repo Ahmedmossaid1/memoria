@@ -2,7 +2,24 @@
 
 This document describes the message data schema for Instagram Messages as exported from Instagram's data download.
 
+---
+
+## Export Format Versions
+
+Instagram has changed their export format over time. Memoria supports both versions:
+
+| Version | Era | Messages Path | Key Differences |
+|---------|-----|---------------|-----------------|
+| Current | 2023+ | `your_instagram_activity/messages/inbox/` | Uses `<h2>` for sender, no comma in timestamp |
+| Legacy | Pre-2023 | `messages/inbox/` | Uses `<div>` for sender, comma after year in timestamp |
+
+Both formats use the same CSS classes and overall HTML structure. Memoria automatically detects which format is present.
+
+---
+
 ## Location in Export
+
+### Current Format (2023+)
 
 ```text
 instagram-username-YYYYMMDD/
@@ -36,6 +53,38 @@ instagram-username-YYYYMMDD/
             └── ...
 ```
 
+### Legacy Format (Pre-2023)
+
+```text
+instagram-username-YYYYMMDD/
+├── index.html
+├── messages/
+│   ├── chats.html
+│   ├── secret_conversations.html
+│   ├── inbox/
+│   │   ├── username1_conversation_id/
+│   │   │   ├── message_1.html
+│   │   │   ├── photos/
+│   │   │   │   └── 123456789.jpg
+│   │   │   └── videos/
+│   │   │       └── 111222333.mp4
+│   │   └── ...
+│   └── message_requests/
+│       └── ...
+└── content/
+    └── ... (media metadata for public posts)
+```
+
+**Key Path Differences:**
+
+| Component | Current Format | Legacy Format |
+|-----------|---------------|---------------|
+| Entry point | `start_here.html` | `index.html` |
+| Messages root | `your_instagram_activity/messages/` | `messages/` |
+| Inbox | `your_instagram_activity/messages/inbox/` | `messages/inbox/` |
+| AI conversations | `your_instagram_activity/messages/ai_conversations/` | Not present |
+| Chat info | `your_instagram_activity/messages/your_chat_information.html` | Not present |
+
 **Key Files:**
 
 - `your_instagram_activity/messages/ai_conversations.html` - Index/summary of AI conversations (e.g., Meta AI)
@@ -62,9 +111,11 @@ Instagram messages are stored as **HTML files** (not JSON). Each `message_N.html
 
 ## HTML Structure
 
-The HTML files use Instagram's standard HTML export format with CSS classes for structure:
+The HTML files use Instagram's standard HTML export format with CSS classes for structure. The message container class is identical between formats, but the sender element type differs.
 
-**Document Structure:**
+### Current Format (2023+)
+
+Uses `<h2>` element for sender name:
 
 ```html
 <html>
@@ -74,17 +125,49 @@ The HTML files use Instagram's standard HTML export format with CSS classes for 
   </head>
   <body>
     <div class="pam _3-95 _2ph- _a6-g uiBoxWhite noborder">
-      <h2>Sender Name</h2>
+      <h2 class="_3-95 _2pim _a6-h _a6-i">Sender Name</h2>
       <div class="_3-95 _a6-p">
         <div>Message content...</div>
         <div>Media attachments...</div>
       </div>
-      <div class="_3-94 _a6-o">Timestamp</div>
+      <div class="_3-94 _a6-o">Sep 22, 2017 6:33 am</div>
     </div>
     ...
   </body>
 </html>
 ```
+
+### Legacy Format (Pre-2023)
+
+Uses `<div>` element for sender name (same CSS classes):
+
+```html
+<html>
+  <head>
+    <title>Conversation Title</title>
+    ...
+  </head>
+  <body>
+    <div class="pam _3-95 _2ph- _a6-g uiBoxWhite noborder">
+      <div class="_3-95 _2pim _a6-h _a6-i">Sender Name</div>
+      <div class="_3-95 _a6-p">
+        <div>Message content...</div>
+        <div>Media attachments...</div>
+      </div>
+      <div class="_3-94 _a6-o">Sep 22, 2017, 6:33 AM</div>
+    </div>
+    ...
+  </body>
+</html>
+```
+
+**Key Differences:**
+
+| Element | Current Format | Legacy Format |
+|---------|---------------|---------------|
+| Sender element | `<h2 class="_3-95 _2pim _a6-h _a6-i">` | `<div class="_3-95 _2pim _a6-h _a6-i">` |
+| Timestamp format | `Sep 22, 2017 6:33 am` | `Sep 22, 2017, 6:33 AM` |
+| Timestamp comma | No comma after year | Comma after year |
 
 ---
 
@@ -97,8 +180,10 @@ Memoria's preprocessor extracts the following information from HTML files:
 | Field | Extraction Method | Example |
 |-------|------------------|---------|
 | Conversation Title | `<title>` tag | `"John Doe"` or `"Family Group"` |
-| Sender | `<h2>` within message container | `"your_username"` or deleted user placeholder |
+| Sender | `<h2>` or `<div>` with class `_3-95 _2pim _a6-h _a6-i` | `"your_username"` or deleted user placeholder |
 | Timestamp | `<div>` with class `_3-94 _a6-o` | `"Sep 22, 2017 6:33 am"` |
+
+**Note:** The sender field uses `<h2>` in current format exports and `<div>` in legacy exports. Memoria checks both element types.
 
 ### Optional Fields
 
@@ -236,12 +321,22 @@ Instagram media files use numeric identifiers:
 
 ## Timestamp Format
 
-Instagram uses a short timestamp format:
+Instagram uses a short timestamp format that varies between export versions:
+
+### Current Format (2023+)
 
 - Format: `"Mon DD, YYYY H:MM am/pm"`
 - Example: `"Sep 22, 2017 6:33 am"`
+- No comma after the year
 
-**Note:** Memoria's preprocessor converts this to `YYYY-MM-DD HH:MM:SS` format for consistency.
+### Legacy Format (Pre-2023)
+
+- Format: `"Mon DD, YYYY, H:MM AM/PM"`
+- Example: `"Sep 22, 2017, 6:33 AM"`
+- Comma after the year
+- AM/PM may be uppercase
+
+**Note:** Memoria's preprocessor handles both formats and converts them to `YYYY-MM-DD HH:MM:SS` format for consistency.
 
 ---
 
@@ -429,30 +524,41 @@ Memoria's preprocessor automatically processes all HTML files in each conversati
 
 ## CSS Class Dependencies
 
-Instagram's HTML export relies on specific CSS classes for structure:
+Instagram's HTML export relies on specific CSS classes for structure. These classes are consistent across both current and legacy export formats:
 
-| CSS Class | Purpose |
-|-----------|---------|
-| `_3-95 _2pim _a6-h _a6-i` | Sender name header |
-| `_3-95 _a6-p` | Message content container |
-| `_3-94 _a6-o` | Timestamp |
-| `pam _3-95 _2ph- _a6-g uiBoxWhite noborder` | Message container |
+| CSS Class | Purpose | HTML Element |
+|-----------|---------|--------------|
+| `_3-95 _2pim _a6-h _a6-i` | Sender name | `<h2>` (current) or `<div>` (legacy) |
+| `_3-95 _a6-p` | Message content container | `<div>` |
+| `_3-94 _a6-o` | Timestamp | `<div>` |
+| `pam _3-95 _2ph- _a6-g uiBoxWhite noborder` | Message container | `<div>` |
 
-**Warning:** If Instagram changes these CSS classes in future exports, the preprocessor may need updates. However, Instagram has maintained this format consistently across multiple export versions.
+**Note:** While CSS classes are identical between formats, the sender name uses different HTML elements (`<h2>` vs `<div>`). Memoria handles both.
+
+**Warning:** If Instagram changes these CSS classes in future exports, the preprocessor may need updates. However, Instagram has maintained this class structure consistently since at least 2017.
 
 ---
 
 ## Platform-Specific Notes
 
+### Format Differences
+
+- **Two Export Versions**: Instagram changed export structure around 2023; Memoria supports both
+- **Path Differences**: Current format uses `your_instagram_activity/messages/`, legacy uses `messages/`
+- **Element Differences**: Sender name uses `<h2>` (current) or `<div>` (legacy) with same CSS classes
+- **Timestamp Differences**: Legacy format includes comma after year (`Sep 22, 2017, 6:33 AM`)
+
+### General Notes
+
 - **HTML Parsing Required**: No JSON format; must parse HTML structure
-- **CSS Class Dependencies**: Extraction relies on Instagram's CSS class names
+- **CSS Class Dependencies**: Extraction relies on Instagram's CSS class names (consistent across versions)
 - **Deleted Users**: Special handling for `instagramuser_{id}` folders (display as "Instagram User" in HTML)
 - **Message Requests**: Separate `message_requests/` folder for messages from non-followers
-- **AI Conversations**: Separate `ai_conversations/` folder with different HTML structure (nested tables instead of divs)
-- **Additional Index Files**: Root-level HTML files (`chats.html`, `ai_conversations.html`, `secret_conversations.html`, `your_chat_information.html`) provide metadata and summaries
+- **AI Conversations**: Separate `ai_conversations/` folder with different HTML structure (current format only)
+- **Additional Index Files**: Root-level HTML files (`chats.html`, `secret_conversations.html`, etc.) provide metadata
 - **Secret Conversations**: Export includes device information for encrypted conversations
 - **Missing Media**: Export excludes ephemeral content (View Once, expired messages)
-- **Multiple HTML Files**: Most recent exports use single `message_1.html` per conversation; very large conversations may split
+- **Multiple HTML Files**: Most exports use single `message_1.html` per conversation; very large ones may split
 - **Media Organization**: Media stored in separate `photos/`, `videos/`, and `audio/` subdirectories
 - **Media File Naming**: Numeric identifiers WITHOUT "photo_" or "video_" prefix (unlike older exports)
 - **Shared Content**: Instagram stories, posts, and reels are preserved as links (media not included)
@@ -460,3 +566,10 @@ Instagram's HTML export relies on specific CSS classes for structure:
 - **Like Messages**: Standalone "Liked a message" messages indicate likes on previous messages
 - **Group Chats**: Include participant list and optional group invite link in HTML
 - **Audio Messages**: Voice messages stored as MP4 files in `audio/` folder
+
+---
+
+## Related Documentation
+
+- [Instagram Export Format Comparison](Instagram-Export-Format-Comparison.md) - Detailed comparison of 2022 vs 2025 export structures
+- [Instagram Export Guide](Instagram-Export.md) - How to download and process Instagram exports
